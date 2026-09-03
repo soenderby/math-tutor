@@ -80,3 +80,21 @@ test('harmonic numbers', () => {
   assert.ok(Math.abs(harmonicApprox(1000) - h1000) < 1e-9);
   assert.ok(Math.abs(harmonic(100).toNumber() - Math.log(100) - EULER_GAMMA - 1 / 200) < 1e-4);
 });
+
+test('user-typed numbers: decimal commas, thousands separators, mixed numbers', async () => {
+  const { normalizeNumeric, fmt, fmtText } = await import('../src/lib/mathutil.js');
+  assert.equal(normalizeNumeric('1,5'), '1.5');
+  assert.equal(normalizeNumeric('3,14'), '3.14');
+  assert.equal(normalizeNumeric('1,234'), '1234');
+  assert.equal(normalizeNumeric('1,234,567'), '1234567');
+  assert.equal(normalizeNumeric('1 234'), '1234');
+  assert.equal(normalizeNumeric('1,234.5'), '1234.5');
+  assert.equal(Fraction.parse('1,5').toString(), '3/2');
+  assert.equal(Fraction.parse('1 1/2').toString(), '3/2');
+  assert.equal(Fraction.parse('-2 3/4').toString(), '-11/4');
+  assert.equal(Fraction.parse('1 1/0'), null);
+  assert.equal(fmt(1234567n), '1\\,234\\,567');
+  assert.equal(fmt(-12345), '-12\\,345');
+  assert.equal(fmt(1234), '1234');
+  assert.equal(fmtText(1234567), '1 234 567');
+});

@@ -119,8 +119,9 @@ export function proofStructure(rng) {
     distractors: [
       step,
       `For every integer $k \\ge ${n0}$: if $P(j)$ is true for all $${n0} \\le j \\le k$, then $P(k+1)$ is true`,
+      `For every integer $k > ${n0}$: if $P(k-1)$ is true then $P(k)$ is true`,
     ],
-    solution: r`The implication must run *upward*: from $P(k)$ (or from all of $P(${n0}),\dots,P(k)$, which is *strong induction*) to $P(k+1)$. Knowing $P(k+1)\Rightarrow P(k)$ only lets you travel downward from cases you have not established.`,
+    solution: r`The implication must run *upward*: from $P(k)$ (or from all of $P(${n0}),\dots,P(k)$, which is *strong induction*) to $P(k+1)$; “$P(k-1) \Rightarrow P(k)$ for $k > ${n0}$” is the same upward step with the index shifted. Knowing $P(k+1)\Rightarrow P(k)$ only lets you travel downward from cases you have not established.`,
   });
 }
 

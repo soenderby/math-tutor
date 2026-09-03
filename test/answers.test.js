@@ -60,3 +60,17 @@ test('formatAnswer renders each type', () => {
   assert.equal(formatAnswer({ type: 'fraction', answer: '-1/2' }), '$-\\frac{1}{2}$');
   assert.equal(formatAnswer({ type: 'mc', choices: ['x', 'y'], answer: 1 }), 'y');
 });
+
+test('decimal commas and mixed numbers are understood', () => {
+  const frac = { type: 'fraction', answer: '3/2' };
+  assert.equal(checkAnswer(frac, '1,5').correct, true);
+  assert.equal(checkAnswer(frac, '1 1/2').correct, true);
+  const dec = { type: 'decimal', answer: 3.5, tolerance: 0.1 };
+  assert.equal(checkAnswer(dec, '3,5').correct, true);
+  assert.equal(checkAnswer(dec, '3,45').correct, true);
+  const int = { type: 'integer', answer: '1024' };
+  assert.equal(checkAnswer(int, '1,024').correct, true);
+  assert.equal(checkAnswer(int, '1,5').parsed, false);
+  const ord = makeOrder(new Rng(1), { kind: 'k', prompt: 'p', ordered: ['$a$', '$b$'], solution: 's' });
+  assert.equal(formatAnswer(ord), '$a$ $\\;<\\;$ $b$');
+});

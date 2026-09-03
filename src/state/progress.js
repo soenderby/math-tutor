@@ -126,7 +126,22 @@ export function exportJSON() {
 
 export function importJSON(text) {
   const parsed = JSON.parse(text);
-  if (!parsed || typeof parsed !== 'object' || !parsed.topics) throw new Error('not a progress file');
-  cache = { ...empty(), ...parsed };
+  if (!parsed || typeof parsed !== 'object' || !parsed.topics || typeof parsed.topics !== 'object') throw new Error('not a progress file');
+  // Coerce each topic record so a hand-edited or truncated file cannot crash the views.
+  const topics = {};
+  for (const [id, t] of Object.entries(parsed.topics)) {
+    if (!t || typeof t !== 'object') continue;
+    const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+    topics[id] = {
+      attempts: num(t.attempts),
+      correct: num(t.correct),
+      history: Array.isArray(t.history) ? t.history.map((x) => (x ? 1 : 0)).slice(-20) : [],
+      box: Math.max(0, Math.min(5, num(t.box))),
+      due: num(t.due),
+      lastPracticed: num(t.lastPracticed),
+      streak: num(t.streak),
+    };
+  }
+  cache = { ...empty(), ...parsed, topics, lessonsRead: parsed.lessonsRead && typeof parsed.lessonsRead === 'object' ? parsed.lessonsRead : {} };
   save();
 }

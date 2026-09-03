@@ -1,5 +1,24 @@
 # Critical review of the TAOCP Math Tutor
 
+## Status (follow-up commit)
+
+All items below have been addressed on this branch except where noted:
+
+- 1-8, 10-13: fixed. Verified by the extended test suite (36 tests), a
+  30,800-exercise strict-KaTeX scan, and a Playwright run through every route,
+  360 practice cards, and all 13 generating-function presets with zero console
+  errors.
+- 9 (TAOCP citations): the references I had evidence against were *softened*
+  to section-level references or Knuth's identity names (binomial identities,
+  hockey stick, multinomial coefficients, the letters in the binomial lesson).
+  The remaining equation numbers (Fibonacci, harmonic, generating-function,
+  asymptotics sections) are unchanged and still unverified against the book.
+- New tests: `test/render.test.js` (strict KaTeX over lessons and generated
+  exercises), closed-form check for the divide-and-conquer cases, formatting
+  glitch scan in the generator test, decimal-comma / mixed-number parsing.
+
+The original review follows.
+
 Scope: every file on the branch `claude/taocp-learning-tool-1ki947` (commit `dee6a9a`),
 read in full, plus execution-based checks:
 

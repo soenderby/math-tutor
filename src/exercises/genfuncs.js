@@ -118,12 +118,18 @@ export function recurrenceToGF(rng) {
   const a0 = rng.int(0, 3), a1 = rng.int(1, 4);
   const numTex = polyToTeX([a0, a1 - c * a0]);
   const denTex = polyToTeX([1, -c, -d]);
-  const rec = `a_n = ${c === 1 ? '' : c === -1 ? '-' : c}a_{n-1} ${d < 0 ? '-' : '+'} ${Math.abs(d) === 1 ? '' : Math.abs(d)}a_{n-2}`;
+  const cT = c === 1 ? '' : c === -1 ? '-' : String(c);
+  const dAbs = Math.abs(d) === 1 ? '' : String(Math.abs(d));
+  const rec = `a_n = ${cT}a_{n-1} ${d < 0 ? '-' : '+'} ${dAbs}a_{n-2}`;
   const correct = r`$\dfrac{${numTex}}{${denTex}}$`;
   const wrongs = [
-    r`$\dfrac{${polyToTeX([a0, a1])}}{${denTex}}$`,
+    // "forgot to subtract c·a_0 from the z coefficient"; when a_0 = 0 that would
+    // coincide with the correct answer, so use the constant a_1 instead.
+    r`$\dfrac{${polyToTeX(a0 === 0 ? [a1] : [a0, a1])}}{${denTex}}$`,
     r`$\dfrac{${numTex}}{${polyToTeX([1, c, d])}}$`,
-    r`$\dfrac{${numTex}}{${polyToTeX([-d, -c, 1])}}$`,
+    // "reversed the denominator" -- but when d = -1 that equals the real
+    // denominator, so fall back to a sign slip on the z^2 term.
+    r`$\dfrac{${numTex}}{${polyToTeX(d === -1 ? [1, -c, d] : [-d, -c, 1])}}$`,
   ];
   return makeMC(rng, {
     kind: 'gf-recurrence',
@@ -131,7 +137,7 @@ export function recurrenceToGF(rng) {
     correct,
     distractors: wrongs,
     hint: 'Multiply the recurrence by zⁿ and sum over n ≥ 2; you get A(z) − a₀ − a₁z = cz(A(z) − a₀) + dz²A(z).',
-    solution: r`Multiply the recurrence by $z^n$ and sum for $n \ge 2$: $A(z) - a_0 - a_1 z = ${c}z\,(A(z) - a_0) + ${d}z^2 A(z)$. Solving, $A(z)(${denTex}) = a_0 + (a_1 - ${c}a_0)z = ${numTex}$, so $A(z) = \dfrac{${numTex}}{${denTex}}$. This is exactly how Knuth derives the Fibonacci generating function in §1.2.8; the denominator $1 - cz - dz^2$ is the recurrence “in disguise”.`,
+    solution: r`Multiply the recurrence by $z^n$ and sum for $n \ge 2$: $A(z) - a_0 - a_1 z = ${cT}z\,(A(z) - a_0) ${d < 0 ? '-' : '+'} ${dAbs}z^2 A(z)$. Solving, $A(z)(${denTex}) = a_0 + (a_1 ${c < 0 ? '+' : '-'} ${Math.abs(c) === 1 ? '' : Math.abs(c)}a_0)z = ${numTex}$, so $A(z) = \dfrac{${numTex}}{${denTex}}$. This is exactly how Knuth derives the Fibonacci generating function in §1.2.8; the denominator $1 - cz - dz^2$ is the recurrence “in disguise”.`,
   });
 }
 

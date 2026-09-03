@@ -49,28 +49,28 @@ The Pascal explorer colours the triangle mod $p$ and traces the identities below
 
 ## The identities
 
-Knuth’s list, in his lettering, with the ones you will use constantly in bold:
+Knuth’s list (he labels them with the letters A–L in the book and gives each a name; the names below are his), with the ones you will use constantly in bold:
 
-**(B) Symmetry.** $\binom nk = \binom n{n-k}$ for integer $n \ge 0$. (Choosing $k$ to take is choosing $n - k$ to leave.)
+**Symmetry.** $\binom nk = \binom n{n-k}$ for integer $n \ge 0$. (Choosing $k$ to take is choosing $n - k$ to leave.)
 
-**(C) Absorption / extraction.** $\binom rk = \dfrac rk \binom{r-1}{k-1}$, equivalently $k\binom rk = r\binom{r-1}{k-1}$. (Pull a factor out of the top and bottom.) A companion: $(r-k)\binom rk = r\binom{r-1}{k}$.
+**Moving in and out of parentheses (absorption).** $\binom rk = \dfrac rk \binom{r-1}{k-1}$, equivalently $k\binom rk = r\binom{r-1}{k-1}$. (Pull a factor out of the top and bottom.) A companion: $(r-k)\binom rk = r\binom{r-1}{k}$.
 
-**(D) Addition (Pascal’s rule).** $\binom rk = \binom{r-1}k + \binom{r-1}{k-1}$. (The $k$-subsets either contain a fixed element or not.)
+**Addition formula (Pascal’s rule).** $\binom rk = \binom{r-1}k + \binom{r-1}{k-1}$. (The $k$-subsets either contain a fixed element or not.)
 
-**(E) Upper negation.** $\binom{-r}{k} = (-1)^k \binom{r+k-1}{k}$. (Multiply each of the $k$ factors of $(-r)^{\underline k}$ by $-1$.) This is how $1/(1-z)^r$ gets positive coefficients.
+**Negating the upper index.** $\binom{-r}{k} = (-1)^k \binom{r+k-1}{k}$. (Multiply each of the $k$ factors of $(-r)^{\underline k}$ by $-1$.) This is how $1/(1-z)^r$ gets positive coefficients.
 
-**(F) Summation on the upper index.** $\displaystyle\sum_{k=0}^{n}\binom km = \binom{n+1}{m+1}$. Sum down a column of the triangle. Proof: apply (D) repeatedly to $\binom{n+1}{m+1}$. The special case $m = 1$ is $\sum k = \binom{n+1}2$.
+**Summation formula, upper index.** $\displaystyle\sum_{k=0}^{n}\binom km = \binom{n+1}{m+1}$. Sum down a column of the triangle. Proof: apply the addition formula repeatedly to $\binom{n+1}{m+1}$. The special case $m = 1$ is $\sum k = \binom{n+1}2$.
 
-**(G) Summation on the lower index.** $\displaystyle\sum_{k=0}^{n}\binom{r+k}{k} = \binom{r+n+1}{n}$. Sum along a diagonal.
+**Summation formula, lower index.** $\displaystyle\sum_{k=0}^{n}\binom{r+k}{k} = \binom{r+n+1}{n}$. Sum along a diagonal.
 
-**(H) Binomial theorem.** $\displaystyle (x+y)^r = \sum_k \binom rk x^k y^{r-k}$ for integer $r \ge 0$ (and for real $r$ as an infinite series when $|x/y| < 1$). Choosing $x = y = 1$: $\sum_k \binom nk = 2^n$. Choosing $x = -1, y = 1$: $\sum_k (-1)^k \binom nk = [n = 0]$.
+**Binomial theorem.** $\displaystyle (x+y)^r = \sum_k \binom rk x^k y^{r-k}$ for integer $r \ge 0$ (and for real $r$ as an infinite series when $|x/y| < 1$). Choosing $x = y = 1$: $\sum_k \binom nk = 2^n$. Choosing $x = -1, y = 1$: $\sum_k (-1)^k \binom nk = [n = 0]$.
 
-**(I) Vandermonde’s convolution.** $\displaystyle\sum_k \binom rk \binom s{n-k} = \binom{r+s}n$. (Choose $n$ from a group of $r$ and a group of $s$; condition on how many come from the first.) With $r = s = n$ and symmetry: $\sum_k \binom nk^2 = \binom{2n}n$.
+**Vandermonde’s convolution.** $\displaystyle\sum_k \binom rk \binom s{n-k} = \binom{r+s}n$. (Choose $n$ from a group of $r$ and a group of $s$; condition on how many come from the first.) With $r = s = n$ and symmetry: $\sum_k \binom nk^2 = \binom{2n}n$.
 
-**(L) Trinomial revision.** $\binom rm\binom mk = \binom rk\binom{r-k}{m-k}$. (Choose $m$ then $k$ of those, or choose $k$ then $m-k$ of the rest.)
+**Simplification formula (trinomial revision).** $\binom rm\binom mk = \binom rk\binom{r-k}{m-k}$. (Choose $m$ then $k$ of those, or choose $k$ then $m-k$ of the rest.)
 
 :::tip When you are not sure
-Plug in small numbers. Every identity above is either a fact about tiny cases of Pascal’s triangle or false. Knuth’s advice for simplifying a sum of binomial coefficients: get the sum into a form where one of (F), (G), (I) applies, using (C) to move factors of $k$ inside and (B)/(E) to flip indices.
+Plug in small numbers. Every identity above is either a fact about tiny cases of Pascal’s triangle or false. Knuth’s advice for simplifying a sum of binomial coefficients: get the sum into a form where one of the summation formulas or Vandermonde applies, using absorption to move factors of $k$ inside and symmetry or upper negation to flip indices.
 :::
 
 ## Worked example: a sum Knuth simplifies

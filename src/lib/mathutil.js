@@ -171,10 +171,19 @@ export class Fraction {
     if (x && x.n !== undefined) return new Fraction(x.n, x.d ?? 1n);
     throw new Error('cannot convert to Fraction');
   }
-  /** Parses "a/b", "-a/b", "a", "1.25", " 3 / 4 ". Returns null on failure. */
+  /**
+   * Parses "a/b", "-a/b", "a", "1.25", "1,25" (decimal comma), "1 234" and
+   * "1,234" (thousands), and mixed numbers like "1 1/2". Returns null on failure.
+   */
   static parse(str) {
     if (typeof str !== 'string') return null;
-    const s = str.replace(/[\s,_]/g, '');
+    const mixed = str.trim().match(/^([+-]?)(\d+)\s+(\d+)\/(\d+)$/);
+    if (mixed) {
+      if (BigInt(mixed[4]) === 0n) return null;
+      const whole = new Fraction(BigInt(mixed[2]), 1n).add(new Fraction(BigInt(mixed[3]), BigInt(mixed[4])));
+      return mixed[1] === '-' ? whole.neg() : whole;
+    }
+    const s = normalizeNumeric(str);
     if (!s) return null;
     let m = s.match(/^([+-]?\d+)\/([+-]?\d+)$/);
     if (m) {
@@ -237,13 +246,36 @@ export function harmonicApprox(n) {
 
 export function lg(x) { return Math.log2(x); }
 
-/** Format a BigInt or number with thin-space thousands grouping for display. */
+/**
+ * Normalise a user-typed number: strips spaces and underscores, and interprets
+ * commas. A comma is a thousands separator when it is followed by exactly three
+ * digits (or a decimal point is also present); otherwise it is a decimal comma,
+ * so "1,5" means 1.5 while "1,234" means 1234.
+ */
+export function normalizeNumeric(str) {
+  let s = String(str).replace(/[\s_]/g, '');
+  if (!s.includes(',')) return s;
+  if (s.includes('.') || /^[+-]?\d{1,3}(,\d{3})+$/.test(s)) return s.replace(/,/g, '');
+  if ((s.match(/,/g) ?? []).length === 1) return s.replace(',', '.');
+  return s.replace(/,/g, '');
+}
+
+/**
+ * Format a BigInt or number with thousands grouping for use INSIDE TeX math:
+ * groups are separated by the TeX thin space `\,`. (A literal U+2009 has no
+ * glyph metrics in KaTeX.) Use `fmtText` for plain-text contexts.
+ */
 export function fmt(x) {
+  return fmtText(x).replace(/\u2009/g, '\\,');
+}
+
+/** Thousands grouping with a thin space (U+2009), for plain text. */
+export function fmtText(x) {
   const s = x.toString();
   const neg = s.startsWith('-');
   const digits = neg ? s.slice(1) : s;
   if (digits.length <= 4) return s;
-  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '\u2009');
   return (neg ? '-' : '') + grouped;
 }
 

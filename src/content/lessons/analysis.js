@@ -50,7 +50,7 @@ $$p_{nk} = \frac1n p_{(n-1)(k-1)} + \frac{n-1}{n}p_{(n-1)k}.$$
 
 $$G_n(z) = \frac{z+1}{2}\cdot\frac{z+2}{3}\cdots\frac{z+n-1}{n} = \frac{1}{n!}\prod_{k=1}^{n-1}(z + k).$$
 
-A product of simple factors: $A$ is the sum of $n - 1$ *independent* indicators, the $k$-th being $1$ with probability $1/(k+1)$. (Combinatorially, $n!\,G_n(z)$ is the generating function for permutations by number of cycles, or by number of left-to-right maxima; see §1.3.3.)
+A product of simple factors: $A$ is the sum of $n - 1$ *independent* indicators, the $k$-th being $1$ with probability $1/(k+1)$. (Combinatorially, $z\cdot n!\,G_n(z) = z(z+1)\cdots(z+n-1)$ is the generating function for permutations by number of cycles, or by number of left-to-right maxima; $A$ is that count minus one. See §1.3.3.)
 
 **Mean and variance from the PGF.** For a probability generating function $G(z) = \sum p_k z^k$:
 
