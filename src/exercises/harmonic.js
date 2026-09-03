@@ -23,7 +23,7 @@ export function harmonicEstimate(rng) {
   return {
     kind: 'harmonic-estimate',
     type: 'decimal',
-    prompt: r`Estimate $H_{${n}}$ to within $0.01$, using $H_n \approx \ln n + \gamma + \dfrac{1}{2n}$ with $\gamma \approx 0.5772$ (and $\ln 10 \approx 2.3026$, $\ln 2 \approx 0.6931$, $\ln 5 \approx 1.6094$).`,
+    prompt: r`Estimate $H_{${n}}$ to within about $0.01$, using $H_n \approx \ln n + \gamma + \dfrac{1}{2n}$ with $\gamma \approx 0.5772$ (and $\ln 10 \approx 2.3026$, $\ln 2 \approx 0.6931$, $\ln 5 \approx 1.6094$).`,
     answer: Math.round(exact * 1000) / 1000,
     tolerance: 0.011,
     hint: 'ln n: break n into factors of 2, 5, 10.',

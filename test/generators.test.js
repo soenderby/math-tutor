@@ -7,7 +7,10 @@ import { Rng } from '../src/lib/rng.js';
 import { markdownToHtml } from '../src/ui/markdown.js';
 import { lessons } from '../src/content/lessons/index.js';
 
-const bad = /NaN|undefined|\[object|\bnull\b/;
+const bad = /NaN|Infinity|undefined|\[object|\bnull\b/;
+// Formatting slips that have bitten before: a coefficient of 1 printed ("1k", "1n^2"),
+// doubled signs ("+ -3", "- -1"), a negative base without parentheses ("-2^n").
+const glitch = /(?<![\d.\\a-z{])1[kn](?![a-z])|\+ -|- -|(?<![(\d])-\d+\^\{?n/;
 
 test('every curriculum topic has generators and a lesson', () => {
   for (const t of topics) {
@@ -28,6 +31,7 @@ test('every generator produces well-formed, self-consistent exercises', () => {
         assert.ok(ex.kind && ex.prompt && ex.solution && ex.type, `${label}: missing fields`);
         const text = [ex.prompt, ex.solution, ex.hint ?? '', ...(ex.choices ?? []), ...(ex.items ?? [])].join('\n');
         assert.ok(!bad.test(text), `${label}: bad text ${text.match(bad)?.[0]}`);
+        assert.ok(!glitch.test(text), `${label}: formatting glitch "${text.match(glitch)?.[0]}" in: ${text.slice(Math.max(0, text.search(glitch) - 40), text.search(glitch) + 40)}`);
         if (ex.type === 'integer') {
           assert.match(ex.answer, /^-?\d+$/, `${label}: integer answer`);
           assert.ok(checkAnswer(ex, ex.answer).correct, `${label}: checker rejects canonical`);
@@ -74,4 +78,14 @@ test('seeded generation is reproducible', () => {
   const a = generateExercise('binomial', new Rng(123));
   const b = generateExercise('binomial', new Rng(123));
   assert.deepEqual(a, b);
+});
+
+test('divide-and-conquer closed forms printed in solutions match the recursion', async () => {
+  const { dcCases } = await import('../src/exercises/recurrences.js');
+  for (const c of dcCases) {
+    const T = (m) => (m === 1 ? c.t1 : c.a * T(m / 2) + c.f(m));
+    for (let k = 1; k <= 8; k++) {
+      assert.equal(c.closed(k), T(2 ** k), `a=${c.a}, f=${c.fTex}, T(1)=${c.t1}: closed form wrong at k=${k}`);
+    }
+  }
 });

@@ -22,7 +22,7 @@ http.createServer(async (req, res) => {
     let urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     if (urlPath.endsWith('/')) urlPath += 'index.html';
     const file = path.normalize(path.join(root, urlPath));
-    if (!file.startsWith(root)) throw new Error('forbidden');
+    if (file !== root && !file.startsWith(root + path.sep)) throw new Error('forbidden');
     const info = await stat(file);
     if (info.isDirectory()) {
       res.writeHead(302, { Location: urlPath + '/' });

@@ -66,7 +66,7 @@ For exact answers when $n$ is a power of two, the sum above is a geometric serie
 
 ## Recurrences with a sum inside
 
-Quicksort’s average comparisons satisfy $C_n = n + 1 + \frac2n\sum_{k=0}^{n-1}C_k$. The trick: multiply by $n$, subtract the same equation for $n - 1$, and the sum disappears: $nC_n - (n-1)C_{n-1} = 2n + 2C_{n-1}$. Dividing by $n(n+1)$ makes it telescope, and out comes $C_n = 2(n+1)H_{n+1} - 4n$, roughly $1.39n\lg n$. Knuth does this in §5.2.2; every step uses a tool from this course (sums, harmonic numbers, induction).
+Quicksort’s average comparisons satisfy $C_n = n + 1 + \frac2n\sum_{k=0}^{n-1}C_k$. The trick: multiply by $n$, subtract the same equation for $n - 1$, and the sum disappears: $nC_n - (n-1)C_{n-1} = 2n + 2C_{n-1}$. Dividing by $n(n+1)$ makes it telescope, and out comes $C_n = 2(n+1)H_n - 2n$, roughly $1.39n\lg n$ (check: $C_1 = 2$, $C_2 = 5$). Knuth does this in §5.2.2; every step uses a tool from this course (sums, harmonic numbers, induction).
 
 ## When nothing works
 

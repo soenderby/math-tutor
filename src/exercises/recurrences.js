@@ -10,14 +10,20 @@ export function firstOrder(rng) {
   const a0 = rng.int(0, 3), n = rng.int(4, 8);
   const seq = [BigInt(a0)];
   for (let i = 1; i <= n; i++) seq.push(BigInt(c) * seq[i - 1] + BigInt(d));
-  const closed = r`a_n = ${c}^n a_0 + ${d}\cdot\dfrac{${c}^n - 1}{${c - 1}}`;
+  // Negative bases must be parenthesised: -2^n reads as -(2^n).
+  const cT = c < 0 ? `(${c})` : String(c);
+  const geom = c - 1 < 0 ? r`\dfrac{1 - ${cT}^n}{${1 - c}}` : r`\dfrac{${cT}^n - 1}{${c - 1}}`;
+  const closed = r`a_n = ${cT}^n a_0 ${d < 0 ? '-' : '+'} ${Math.abs(d)}\cdot ${geom}`;
+  const geomVal = (BigInt(c) ** BigInt(n) - 1n) / BigInt(c - 1);
+  const geomT = geomVal < 0n ? `(${geomVal})` : String(geomVal);
+  const powVal = BigInt(c) ** BigInt(n) * BigInt(a0);
   return {
     kind: 'first-order',
     type: 'integer',
     prompt: r`Let $a_0 = ${a0}$ and $a_n = ${c}a_{n-1} ${d < 0 ? '-' : '+'} ${Math.abs(d)}$ for $n \ge 1$. Compute $a_{${n}}$.`,
     answer: seq[n].toString(),
     hint: 'Iterate, or unroll: a_n = c^n a_0 + d(1 + c + … + c^{n−1}).',
-    solution: r`Iterating: ${seq.map((v, i) => `$a_{${i}} = ${v}$`).join(', ')}. Unrolling gives the closed form $${closed}$, i.e. $a_{${n}} = ${fmt(BigInt(c) ** BigInt(n) * BigInt(a0))} + ${d}\cdot ${(BigInt(c) ** BigInt(n) - 1n) / BigInt(c - 1)} = ${seq[n]}$. Knuth’s way to see this: the substitution $b_n = a_n + \frac{d}{c-1}$ turns it into $b_n = c\,b_{n-1}$.`,
+    solution: r`Iterating: ${seq.map((v, i) => `$a_{${i}} = ${v}$`).join(', ')}. Unrolling gives the closed form $${closed}$, i.e. $a_{${n}} = ${powVal < 0n ? `(${fmt(powVal)})` : fmt(powVal)} ${d < 0 ? '-' : '+'} ${Math.abs(d)}\cdot ${geomT} = ${seq[n]}$. Knuth’s way to see this: the substitution $b_n = a_n + \frac{d}{c-1}$ turns it into $b_n = c\,b_{n-1}$.`,
   };
 }
 
@@ -55,18 +61,20 @@ export function characteristic(rng) {
   const [r1, r2] = roots;
   const p = r1 + r2, q = -r1 * r2;
   const rec = `a_n = ${p === 1 ? '' : p === -1 ? '-' : p}a_{n-1} ${q < 0 ? '-' : '+'} ${Math.abs(q) === 1 ? '' : Math.abs(q)}a_{n-2}`;
+  const pw = (x) => (x < 0 ? `(${x})` : String(x)); // base of a power, parenthesised if negative
+  const lin = (x) => `1 ${x < 0 ? '+' : '-'} ${Math.abs(x) === 1 ? '' : Math.abs(x)}z`; // 1 - xz
   if (rng.chance(0.5)) {
     return makeMC(rng, {
       kind: 'characteristic',
       prompt: r`The recurrence $${rec}$ has characteristic equation $x^2 ${p < 0 ? '+' : '-'} ${Math.abs(p)}x ${q < 0 ? '+' : '-'} ${Math.abs(q)} = 0$. What is the general solution?`,
-      correct: r`$a_n = A\cdot ${r1 < 0 ? `(${r1})` : r1}^n + B\cdot ${r2 < 0 ? `(${r2})` : r2}^n$`,
+      correct: r`$a_n = A\cdot ${pw(r1)}^n + B\cdot ${pw(r2)}^n$`,
       distractors: [
-        r`$a_n = A\cdot ${p}^n + B\cdot ${q}^n$`,
-        r`$a_n = A\cdot ${r1 < 0 ? `(${r1})` : r1}^n + B\,n\cdot ${r1 < 0 ? `(${r1})` : r1}^n$`,
-        r`$a_n = A\cdot ${-r1 < 0 ? `(${-r1})` : -r1}^n + B\cdot ${-r2 < 0 ? `(${-r2})` : -r2}^n$`,
+        r`$a_n = A\cdot ${pw(p)}^n + B\cdot ${pw(q)}^n$`,
+        r`$a_n = A\cdot ${pw(r1)}^n + B\,n\cdot ${pw(r1)}^n$`,
+        r`$a_n = A\cdot ${pw(-r1)}^n + B\cdot ${pw(-r2)}^n$`,
       ],
       hint: 'Factor the characteristic polynomial; each root ρ contributes a solution ρⁿ.',
-      solution: r`$x^2 ${p < 0 ? '+' : '-'} ${Math.abs(p)}x ${q < 0 ? '+' : '-'} ${Math.abs(q)} = (x - (${r1}))(x - (${r2}))$, so the roots are $${r1}$ and $${r2}$ and every solution is $A\cdot(${r1})^n + B\cdot(${r2})^n$; $A, B$ come from $a_0, a_1$. (With a repeated root $\rho$ the solutions are $A\rho^n + Bn\rho^n$.) Knuth reaches the same formula via the generating function $\frac{\dots}{(1 - ${r1}z)(1 - ${r2}z)}$ and partial fractions.`,
+      solution: r`$x^2 ${p < 0 ? '+' : '-'} ${Math.abs(p)}x ${q < 0 ? '+' : '-'} ${Math.abs(q)} = (x - ${pw(r1)})(x - ${pw(r2)})$, so the roots are $${r1}$ and $${r2}$ and every solution is $A\cdot ${pw(r1)}^n + B\cdot ${pw(r2)}^n$; $A, B$ come from $a_0, a_1$. (With a repeated root $\rho$ the solutions are $A\rho^n + Bn\rho^n$.) Knuth reaches the same formula via the generating function $\frac{\dots}{(${lin(r1)})(${lin(r2)})}$ and partial fractions.`,
     });
   }
   const a0 = rng.int(0, 3), a1 = rng.int(1, 5), n = rng.int(4, 8);
@@ -80,7 +88,7 @@ export function characteristic(rng) {
     prompt: r`Let $a_0 = ${a0}$, $a_1 = ${a1}$ and $${rec}$ for $n \ge 2$. Compute $a_{${n}}$.`,
     answer: String(seq[n]),
     hint: 'Iterate the recurrence, or solve via the characteristic roots and check.',
-    solution: r`Iterating: ${seq.map((v, i) => `$a_{${i}} = ${v}$`).join(', ')}. The closed form is $a_n = A\cdot(${r1})^n + B\cdot(${r2})^n$ with $A = ${fmtQ(A)}$, $B = ${fmtQ(B)}$ (from $a_0$ and $a_1$), which gives $a_{${n}} = ${seq[n]}$.`,
+    solution: r`Iterating: ${seq.map((v, i) => `$a_{${i}} = ${v}$`).join(', ')}. The closed form is $a_n = A\cdot ${pw(r1)}^n + B\cdot ${pw(r2)}^n$ with $A = ${fmtQ(A)}$, $B = ${fmtQ(B)}$ (from $a_0$ and $a_1$), which gives $a_{${n}} = ${seq[n]}$.`,
   };
 }
 
@@ -91,14 +99,16 @@ function fmtQ(x) {
   return x.toFixed(3);
 }
 
-const dcCases = [
-  { a: 2, f: (n) => n, fTex: 'n', t1: 0, theta: r`n\log n`, closedTex: (k) => r`k\cdot 2^k = n\lg n` },
-  { a: 1, f: () => 1, fTex: '1', t1: 0, theta: r`\log n`, closedTex: () => r`k = \lg n` },
-  { a: 2, f: () => 1, fTex: '1', t1: 1, theta: r`n`, closedTex: () => r`2^{k+1} - 1 = 2n - 1` },
-  { a: 1, f: (n) => n, fTex: 'n', t1: 0, theta: r`n`, closedTex: () => r`2n - 2` },
-  { a: 4, f: (n) => n, fTex: 'n', t1: 0, theta: r`n^2`, closedTex: () => r`2n^2 - 2n` },
-  { a: 2, f: (n) => n * n, fTex: 'n^2', t1: 0, theta: r`n^2`, closedTex: () => r`2n^2 - 2n` },
-  { a: 3, f: (n) => n, fTex: 'n', t1: 0, theta: r`n^{\lg 3}`, closedTex: () => r`3\cdot 3^k - 2\cdot 2^k` },
+// `closed(k)` is the exact value of T(2^k) that `closedTex` describes; the test
+// suite checks it against the recursion so the printed formula cannot drift.
+export const dcCases = [
+  { a: 2, f: (n) => n, fTex: 'n', t1: 0, theta: r`n\log n`, closedTex: (k) => r`k\cdot 2^k = n\lg n`, closed: (k) => k * 2 ** k },
+  { a: 1, f: () => 1, fTex: '1', t1: 0, theta: r`\log n`, closedTex: () => r`k = \lg n`, closed: (k) => k },
+  { a: 2, f: () => 1, fTex: '1', t1: 1, theta: r`n`, closedTex: () => r`2^{k+1} - 1 = 2n - 1`, closed: (k) => 2 ** (k + 1) - 1 },
+  { a: 1, f: (n) => n, fTex: 'n', t1: 0, theta: r`n`, closedTex: () => r`2n - 2`, closed: (k) => 2 * 2 ** k - 2 },
+  { a: 4, f: (n) => n, fTex: 'n', t1: 0, theta: r`n^2`, closedTex: () => r`n(n - 1) = n^2 - n`, closed: (k) => 4 ** k - 2 ** k },
+  { a: 2, f: (n) => n * n, fTex: 'n^2', t1: 0, theta: r`n^2`, closedTex: () => r`2n^2 - 2n`, closed: (k) => 2 * 4 ** k - 2 * 2 ** k },
+  { a: 3, f: (n) => n, fTex: 'n', t1: 0, theta: r`n^{\lg 3}`, closedTex: () => r`2\cdot 3^k - 2\cdot 2^k`, closed: (k) => 2 * 3 ** k - 2 * 2 ** k },
 ];
 
 export function divideAndConquer(rng) {

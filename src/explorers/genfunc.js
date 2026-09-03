@@ -32,13 +32,14 @@ export function parseFactored(text) {
   while (i < s.length) {
     if (s[i] === '*') { i++; continue; }
     if (s[i] !== '(') {
-      // a leading coefficient like 2(1-z)
-      const m = s.slice(i).match(/^-?\d+(?:\/\d+)?/);
-      if (!m) return null;
-      const c = Fraction.parse(m[0]);
-      if (!c) return null;
-      acc = acc.map((a) => a.mul(c));
-      i += m[0].length;
+      // An unparenthesised factor such as 2(1-z), z(1+z), -(1-z) or 3z^2(1-z):
+      // everything up to the next parenthesis is a polynomial factor.
+      const end = s.indexOf('(', i);
+      const chunk = s.slice(i, end === -1 ? s.length : end);
+      const poly = chunk === '-' ? [new Fraction(-1n)] : chunk === '+' ? [new Fraction(1n)] : parsePolynomial(chunk);
+      if (!poly) return null;
+      acc = seriesMul(acc, poly, acc.length + poly.length - 2);
+      i += chunk.length;
       continue;
     }
     let depth = 0, j = i;

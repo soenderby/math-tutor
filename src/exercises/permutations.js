@@ -103,7 +103,7 @@ export function multisetPermutations(rng) {
     prompt: r`How many distinct strings can be formed by rearranging the letters of **${w}**?`,
     answer: ans.toString(),
     hint: 'Start with n! and divide by (count)! for every repeated letter.',
-    solution: r`The word has $${w.length}$ letters${repeated.length ? `, with ${repeated.map(([ch, c]) => `${ch} appearing $${c}$ times`).join(', ')}` : ' and no repeats'}. Permuting identical letters among themselves does not change the string, so the count is $\dfrac{${w.length}!}{${repeated.map(([, c]) => `${c}!`).join('\\,') || '1'}} = ${fmt(ans)}$. Knuth calls these *multinomial coefficients* (§1.2.6, eq. (42)).`,
+    solution: r`The word has $${w.length}$ letters${repeated.length ? `, with ${repeated.map(([ch, c]) => `${ch} appearing $${c}$ times`).join(', ')}` : ' and no repeats'}. Permuting identical letters among themselves does not change the string, so the count is $\dfrac{${w.length}!}{${repeated.map(([, c]) => `${c}!`).join('\\,') || '1'}} = ${fmt(ans)}$. Knuth calls these *multinomial coefficients* (end of §1.2.6).`,
   };
 }
 

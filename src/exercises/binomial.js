@@ -70,14 +70,14 @@ export function rowSums(rng) {
 }
 
 const identities = [
-  { lhs: r`k\binom{n}{k}`, ok: r`n\binom{n-1}{k-1}`, bad: [r`n\binom{n}{k-1}`, r`(n-k)\binom{n-1}{k}`, r`k\binom{n-1}{k}`], name: 'absorption (§1.2.6 eq. (6))' },
+  { lhs: r`k\binom{n}{k}`, ok: r`n\binom{n-1}{k-1}`, bad: [r`n\binom{n}{k-1}`, r`(n-k)\binom{n-1}{k}`, r`k\binom{n-1}{k}`], name: 'absorption (“moving in and out of parentheses”, §1.2.6)' },
   { lhs: r`\binom{n}{k}`, ok: r`\binom{n-1}{k} + \binom{n-1}{k-1}`, bad: [r`\binom{n-1}{k} + \binom{n}{k-1}`, r`\binom{n-1}{k-1} + \binom{n-2}{k-1}`, r`2\binom{n-1}{k-1}`], name: 'addition formula (Pascal’s rule, eq. (9))' },
   { lhs: r`\binom{n}{k}` + r`\text{ for integer } n \ge 0`, ok: r`\binom{n}{n-k}`, bad: [r`\binom{n-k}{k}`, r`\binom{k}{n}`, r`\binom{n}{k-n}`], name: 'symmetry (eq. (6))' },
   { lhs: r`\binom{n}{k}\binom{k}{m}`, ok: r`\binom{n}{m}\binom{n-m}{k-m}`, bad: [r`\binom{n}{m}\binom{k}{n-m}`, r`\binom{n}{k-m}\binom{k}{m}`, r`\binom{n-k}{m}\binom{n}{k}`], name: 'trinomial revision (eq. (20))' },
   { lhs: r`\binom{-n}{k}` + r`\text{ for } n \ge 1`, ok: r`(-1)^k\binom{n+k-1}{k}`, bad: [r`-\binom{n}{k}`, r`(-1)^k\binom{n}{k}`, r`(-1)^n\binom{n+k-1}{k}`], name: 'upper negation (eq. (17))' },
   { lhs: r`\binom{r}{k}`, ok: r`\frac{r}{k}\binom{r-1}{k-1}`, bad: [r`\frac{k}{r}\binom{r-1}{k-1}`, r`\frac{r}{k}\binom{r}{k-1}`, r`\frac{r-1}{k}\binom{r-1}{k-1}`], name: 'absorption in the form (7)' },
-  { lhs: r`\sum_{k=0}^{n}\binom{k}{m}`, ok: r`\binom{n+1}{m+1}`, bad: [r`\binom{n}{m+1}`, r`\binom{n+1}{m}`, r`\binom{n+m}{m}`], name: 'summation on the upper index (eq. (10))' },
-  { lhs: r`\sum_{k=0}^{n}\binom{r+k}{k}`, ok: r`\binom{r+n+1}{n}`, bad: [r`\binom{r+n}{n}`, r`\binom{r+n+1}{n+1}`, r`\binom{r+n}{r}`], name: 'summation on the lower/upper index (eq. (11))' },
+  { lhs: r`\sum_{k=0}^{n}\binom{k}{m}`, ok: r`\binom{n+1}{m+1}`, bad: [r`\binom{n}{m+1}`, r`\binom{n+1}{m}`, r`\binom{n+m}{m}`], name: 'summation on the upper index (one of the two summation formulas in §1.2.6)' },
+  { lhs: r`\sum_{k=0}^{n}\binom{r+k}{k}`, ok: r`\binom{r+n+1}{n}`, bad: [r`\binom{r+n}{n}`, r`\binom{r+n+1}{n+1}`, r`\binom{r+n}{r}`], name: 'summation on the lower index (the other summation formula in §1.2.6)' },
   { lhs: r`\sum_{k}\binom{r}{k}\binom{s}{n-k}`, ok: r`\binom{r+s}{n}`, bad: [r`\binom{r}{n}\binom{s}{n}`, r`\binom{rs}{n}`, r`\binom{r+s}{r+s-n}\cdot\binom{n}{r}`], name: 'Vandermonde’s convolution (eq. (21))' },
 ];
 
@@ -136,7 +136,7 @@ export function hockeyStick(rng) {
     prompt: r`Evaluate $\displaystyle\sum_{k=0}^{${n}} \binom{k}{${m}}$.`,
     answer: s.toString(),
     hint: 'Sum along a column of Pascal’s triangle: the answer sits one row down and one column right.',
-    solution: r`Summing on the upper index (§1.2.6 eq. (10)): $\sum_{k=0}^{n}\binom{k}{m} = \binom{n+1}{m+1}$. Here $\binom{${n + 1}}{${m + 1}} = ${fmt(s)}$. Proof idea: apply Pascal’s rule repeatedly, $\binom{n+1}{m+1} = \binom{n}{m} + \binom{n}{m+1} = \binom{n}{m} + \binom{n-1}{m} + \binom{n-1}{m+1} = \dots$. (Nicknamed the *hockey-stick identity* from its shape in the triangle; try it in the Pascal explorer.)`,
+    solution: r`Summing on the upper index (one of Knuth’s two summation formulas in §1.2.6): $\sum_{k=0}^{n}\binom{k}{m} = \binom{n+1}{m+1}$. Here $\binom{${n + 1}}{${m + 1}} = ${fmt(s)}$. Proof idea: apply Pascal’s rule repeatedly, $\binom{n+1}{m+1} = \binom{n}{m} + \binom{n}{m+1} = \binom{n}{m} + \binom{n-1}{m} + \binom{n-1}{m+1} = \dots$. (Nicknamed the *hockey-stick identity* from its shape in the triangle; try it in the Pascal explorer.)`,
   };
 }
 

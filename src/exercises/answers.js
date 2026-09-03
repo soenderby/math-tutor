@@ -8,18 +8,18 @@
 //   type 'mc'       -> answer: index into choices
 //   type 'order'    -> items: string[], answer: number[] (indices in correct order)
 
-import { Fraction } from '../lib/mathutil.js';
+import { Fraction, normalizeNumeric } from '../lib/mathutil.js';
 
 export function parseInteger(input) {
   if (typeof input !== 'string') return null;
-  const s = input.replace(/[\s,_]/g, '').replace(/^\+/, '');
+  const s = normalizeNumeric(input).replace(/^\+/, '');
   if (!/^-?\d+$/.test(s)) return null;
   return BigInt(s);
 }
 
 export function parseNumber(input) {
   if (typeof input !== 'string') return null;
-  const s = input.replace(/[\s,_]/g, '');
+  const s = normalizeNumeric(input);
   const f = Fraction.parse(s);
   if (f) return f.toNumber();
   if (/^[+-]?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(s)) return Number(s);
@@ -34,7 +34,7 @@ export function checkAnswer(exercise, input) {
   switch (exercise.type) {
     case 'integer': {
       const v = parseInteger(input);
-      if (v === null) return { correct: false, parsed: false, message: 'Enter an integer (e.g. 42 or -7).' };
+      if (v === null) return { correct: false, parsed: false, message: 'Enter an integer (e.g. 42 or -7). A comma followed by one or two digits is read as a decimal point.' };
       return { correct: v === BigInt(exercise.answer), parsed: true };
     }
     case 'fraction': {
@@ -74,7 +74,7 @@ export function formatAnswer(exercise) {
     case 'fraction': return `$${Fraction.parse(exercise.answer).toTeX()}$`;
     case 'decimal': return `$\\approx ${exercise.answer}$`;
     case 'mc': return exercise.choices[exercise.answer];
-    case 'order': return exercise.answer.map((i) => exercise.items[i]).join(' $\;<\;$ ');
+    case 'order': return exercise.answer.map((i) => exercise.items[i]).join(' $\\;<\\;$ ');
     default: return '';
   }
 }

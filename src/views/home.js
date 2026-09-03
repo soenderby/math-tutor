@@ -4,7 +4,7 @@ import { masteryLevel, masteryScore, topicStats, isDue, lessonRead } from '../st
 
 const levelLabel = { new: 'Not started', learning: 'Learning', solid: 'Solid', mastered: 'Mastered' };
 
-/** First topic in order that is not solid/mastered and whose prerequisites are at least started. */
+/** First topic in curriculum order that is not yet solid/mastered. */
 export function recommendedTopic() {
   for (const t of topics) {
     const level = masteryLevel(t.id);

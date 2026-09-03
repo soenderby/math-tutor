@@ -13,7 +13,8 @@ export function arithmeticSum(rng) {
   let s = 0;
   for (let k = a; k <= b; k++) s += c * k + d;
   const terms = b - a + 1;
-  const summand = d === 0 ? `${c}k` : `(${c}k ${sgn(d)})`;
+  const ck = c === 1 ? 'k' : `${c}k`;
+  const summand = d === 0 ? ck : `(${ck} ${sgn(d)})`;
   return {
     kind: 'arithmetic-sum',
     type: 'integer',

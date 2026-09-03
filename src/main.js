@@ -95,6 +95,6 @@ function notFound() {
 }
 
 window.addEventListener('hashchange', render);
-// Re-render once KaTeX has loaded if the page rendered before it (slow CDN).
-window.addEventListener('load', () => { if (!globalThis.renderMathInElement) setTimeout(() => globalThis.renderMathInElement && render(), 500); });
+// KaTeX is loaded with `defer` ahead of this module in index.html, so it is
+// always available by the time this runs.
 render();

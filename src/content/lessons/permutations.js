@@ -37,7 +37,7 @@ $n!$ grows fast: $10! = 3\,628\,800$, $20! \approx 2.4\times 10^{18}$, $70! > 10
 $\dfrac{n!}{(n-3)!} = n(n-1)(n-2)$. Cancel first; the numbers stay small. Almost every factorial in TAOCP appears in a ratio.
 :::
 
-**Permutations of a multiset.** Arrangements of the letters of MISSISSIPPI: $11$ letters, with I ×4, S ×4, P ×2. Permuting identical letters among themselves does not change the string, so the count is $\dfrac{11!}{4!\,4!\,2!} = 34\,650$. Knuth calls $\binom{n}{n_1, n_2, \dots} = \frac{n!}{n_1!\,n_2!\cdots}$ a **multinomial coefficient** (§1.2.6 eq. (42)).
+**Permutations of a multiset.** Arrangements of the letters of MISSISSIPPI: $11$ letters, with I ×4, S ×4, P ×2. Permuting identical letters among themselves does not change the string, so the count is $\dfrac{11!}{4!\,4!\,2!} = 34\,650$. Knuth calls $\binom{n}{n_1, n_2, \dots} = \frac{n!}{n_1!\,n_2!\cdots}$ a **multinomial coefficient** (end of §1.2.6).
 
 ## The prime factorisation of n!
 

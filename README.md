@@ -73,8 +73,15 @@ test/                        unit tests
 - **A new exercise kind**: add a function `(rng) => exercise` to the relevant
   module in `src/exercises/` and append it to that module's `generators` array.
   The test suite generates every kind with many seeds and checks that the
-  canonical answer passes the checker and that no `NaN`/`undefined` leaks into
-  the text.
+  canonical answer passes the checker, that no `NaN`/`undefined` or formatting
+  slip (`1k`, `+ -3`, `-2^n`) leaks into the text, and that every `$…$` fragment
+  renders through the vendored KaTeX in strict mode (`test/render.test.js`).
+  If a solution prints a closed form, add a numeric version of it and test it
+  against the recurrence (see `dcCases` in `src/exercises/recurrences.js`).
+- **Numbers inside TeX**: use `fmt()` (thousands separated by `\,`); it must not
+  be used in plain text, where `fmtText()` gives a real thin space.
+- **Answer input**: `1,5` is read as `1.5`, `1,234` as `1234`, and `1 1/2` as a
+  mixed number; see `normalizeNumeric` in `src/lib/mathutil.js`.
 - **Lesson text**: edit `src/content/lessons/<topic>.js`. The body is markdown
   with `$…$` / `$$…$$` math and `:::kind Title … :::` callouts
   (`note`, `example`, `taocp`, `tip`, `warning`).

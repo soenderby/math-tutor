@@ -96,7 +96,7 @@ export function dominantTerm(rng) {
     correct: r`$\Theta(${top.theta})$`,
     distractors: distract,
     hint: 'Keep the fastest-growing term and drop its constant factor.',
-    solution: r`As $n \to \infty$, the term $${chosen[0].tex(coeffs[0])}$ dominates the others (their ratio to it tends to $0$), so $f(n) = \Theta(${top.theta})$. Constant factors and lower-order terms are exactly what $\Theta$ is designed to hide. Beware though: for *actual* running times at realistic $n$, a coefficient like $${Math.max(...coeffs)}$ on a lower term can matter, which is why Knuth keeps exact counts when he can.`,
+    solution: r`As $n \to \infty$, the term $${top.tex(coeffs[0] === 1 && top.rank !== 0 ? '' : coeffs[0])}$ dominates the others (their ratio to it tends to $0$), so $f(n) = \Theta(${top.theta})$. Constant factors and lower-order terms are exactly what $\Theta$ is designed to hide. Beware though: for *actual* running times at realistic $n$, a coefficient like $${Math.max(...coeffs)}$ on a lower term can matter, which is why Knuth keeps exact counts when he can.`,
   });
 }
 
@@ -183,13 +183,16 @@ export function polynomialBound(rng) {
   const a = rng.int(1, 4);
   const variant = rng.pick(['poly', 'polylog', 'sqrt']);
   if (variant === 'poly') {
-    const b = rng.int(0, a - 1);
+    const pow = (coef, e) => (e === 0 ? `${coef}` : e === 1 ? `${coef}n` : `${coef}n^{${e}}`);
+    const terms = [pow(rng.int(2, 9), a)];
+    if (a >= 2) terms.push(pow(rng.int(10, 99), rng.int(1, a - 1)));
+    terms.push('7');
     return {
       kind: 'poly-bound',
       type: 'integer',
-      prompt: r`What is the smallest integer $k$ such that $${rng.int(2, 9)}n^{${a}} + ${rng.int(10, 99)}n^{${b}} + 7 = O(n^k)$?`,
+      prompt: r`What is the smallest integer $k$ such that $${terms.join(' + ')} = O(n^k)$?`,
       answer: String(a),
-      solution: r`The highest power present is $n^{${a}}$, and a polynomial of degree $d$ is $O(n^d)$ but not $O(n^{d-1})$. So $k = ${a}$.`,
+      solution: r`The highest power present is $${pow('', a)}$, and a polynomial of degree $d$ is $O(n^d)$ but not $O(n^{d-1})$. So $k = ${a}$.`,
     };
   }
   if (variant === 'polylog') {

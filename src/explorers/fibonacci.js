@@ -4,7 +4,9 @@ import { fib, PHI } from '../lib/mathutil.js';
 
 export function mountFibonacci(container) {
   let N = 20;
-  const range = h('input', { type: 'range', min: 5, max: 60, value: N });
+  // Capped at 50: beyond that F_n exceeds the precision of the double used for phi^n/sqrt5
+  // and the "phi^n/sqrt5 - F_n" column would show floating-point noise.
+  const range = h('input', { type: 'range', min: 5, max: 50, value: N });
   const label = h('span', { class: 'mono' }, String(N));
   const zIn = h('input', { type: 'number', min: 1, value: 100 });
   const controls = h('div', { class: 'controls' }, h('label', {}, 'Show n up to: ', range, label), h('label', {}, 'Zeckendorf of: ', zIn));
